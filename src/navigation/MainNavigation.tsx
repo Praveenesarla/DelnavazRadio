@@ -20,7 +20,6 @@ import PlayerScreen from '../Screens/PlayerScreen';
 const Stack = createStackNavigator();
 
 const MainNavigation = () => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -46,7 +45,11 @@ const MainNavigation = () => {
           component={AccountPrivacy}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="EditProfile" component={EditProfile} />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{headerShown: false}}
+        />
         <Stack.Screen name="Founders" component={Founders} />
         <Stack.Screen name="HelpAndSupport" component={HelpAndSupport} />
         <Stack.Screen name="NonProfit" component={NonProfit} />

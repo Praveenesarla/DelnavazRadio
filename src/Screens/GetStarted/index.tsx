@@ -26,6 +26,7 @@ const GetStarted = ({navigation}) => {
       <View style={{marginTop: 'auto', marginVertical: vs(15)}}>
         <AppButton
           onPress={() => {
+            console.log('seting');
             navigation.navigate('Login');
           }}
           text="Get Started"

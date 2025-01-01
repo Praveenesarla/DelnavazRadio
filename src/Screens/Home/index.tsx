@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -24,10 +25,17 @@ import FloatingPlayer from '../../components/FloatingPlayer';
 import {recomendedSongs} from '../../data/songs';
 import {isTabletMode} from 'react-native-device-info';
 import TrackPlayer, {AddTrack, useActiveTrack} from 'react-native-track-player';
-import {getAllPodcast} from '../../api/auth';
+import {getAllPodcast, getCategory} from '../../api/auth';
+import Icon from 'react-native-vector-icons/Octicons';
+import {getItem, getToken, setItem} from '../../api/localstorage';
+import {useNotifications} from '../../utils/NotificationContext';
 
 const HomeScreen = ({navigation}) => {
   const [podcasts, setPodcasts] = useState<object[] | null>(null);
+  const [Interviews, setInterviews] = useState(null);
+  const [Children, setChildren] = useState(null);
+  const [English, setEnglish] = useState(null);
+  const [notifications, setNotifications] = useState(true);
   const activeTrack = useActiveTrack();
   const DATA: ItemData[] = [
     {
@@ -50,7 +58,94 @@ const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     allSongs();
+    getInterview();
+    getChildren();
+    getEnglish();
   }, []);
+
+  const getInterview = async () => {
+    try {
+      const response = await getCategory('/Interview');
+      if (response?.data.status === 200) {
+        const tracks = response.data.data;
+        const transTracks = tracks.map(
+          (track: {
+            recordingfile: {url: any};
+            name: any;
+            category: any;
+            bannerimage: {url: any};
+          }) => ({
+            url: track.recordingfile.url,
+            title: track.name,
+            artist: track.category,
+            artwork: track.bannerimage.url,
+          }),
+        );
+        console.log('History', transTracks);
+        setInterviews(transTracks);
+      } else {
+        console.error('Failed to fetch podcasts:', response?.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching podcasts:', error);
+    }
+  };
+
+  const getChildren = async () => {
+    try {
+      const response = await getCategory('/Children');
+      if (response?.data.status === 200) {
+        const tracks = response.data.data;
+        const transTracks = tracks.map(
+          (track: {
+            recordingfile: {url: any};
+            name: any;
+            category: any;
+            bannerimage: {url: any};
+          }) => ({
+            url: track.recordingfile.url,
+            title: track.name,
+            artist: track.category,
+            artwork: track.bannerimage.url,
+          }),
+        );
+        console.log('History', transTracks);
+        setChildren(transTracks);
+      } else {
+        console.error('Failed to fetch podcasts:', response?.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching podcasts:', error);
+    }
+  };
+
+  const getEnglish = async () => {
+    try {
+      const response = await getCategory('/English');
+      if (response?.data.status === 200) {
+        const tracks = response.data.data;
+        const transTracks = tracks.map(
+          (track: {
+            recordingfile: {url: any};
+            name: any;
+            category: any;
+            bannerimage: {url: any};
+          }) => ({
+            url: track.recordingfile.url,
+            title: track.name,
+            artist: track.category,
+            artwork: track.bannerimage.url,
+          }),
+        );
+        console.log('History', transTracks);
+        setEnglish(transTracks);
+      } else {
+        console.error('Failed to fetch podcasts:', response?.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching podcasts:', error);
+    }
+  };
 
   const allSongs = async () => {
     try {
@@ -82,8 +177,21 @@ const HomeScreen = ({navigation}) => {
 
   const handlePlayTrack = async (
     selectedTrack: AddTrack[],
-    songs = podcasts,
+    category: string,
+    songs: null,
   ) => {
+    if (category === 'top') {
+      songs = podcasts;
+    } else if (category === 'Interview') {
+      songs = Interviews;
+    } else if (category === 'Children') {
+      songs = Children;
+    } else if (category === 'English') {
+      songs = English;
+    } else {
+      songs = podcasts;
+    }
+
     console.log(selectedTrack);
 
     const trackIndex = songs?.findIndex(
@@ -117,10 +225,25 @@ const HomeScreen = ({navigation}) => {
         <View style={{gap: 15, paddingTop: vs(25)}}>
           <View style={styles.header}>
             <AppIcon width={s(48)} height={vs(48)} />
-            <Image
+            {/* <Image
               source={require('../../assets/icons/bell.png')}
               style={{width: s(42), height: vs(40)}}
-            />
+            /> */}
+            <TouchableOpacity
+              style={{
+                width: 50,
+                height: 50,
+                backgroundColor: 'white',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 25,
+              }}>
+              <Icon
+                name={notifications ? 'bell' : 'bell-slash'}
+                size={25}
+                color="black"
+              />
+            </TouchableOpacity>
           </View>
           <Text style={styles.headerTitle}>
             What kind of podcast do you want to hear today?
@@ -145,8 +268,8 @@ const HomeScreen = ({navigation}) => {
           renderItem={({item}) => (
             <TopPodcastCard
               item={item}
-              handlePlay={(selectedTrack: any) => {
-                handlePlayTrack(selectedTrack);
+              handlePlay={(selectedTrack: any, category: string) => {
+                handlePlayTrack(selectedTrack, (category = 'top'));
               }}
             />
           )}
@@ -157,9 +280,16 @@ const HomeScreen = ({navigation}) => {
         <CardHeader header={'Interview with scholars'} />
         <FlatList
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingLeft: s(15), gap: 20}}
-          data={DATA}
-          renderItem={({item}) => <ScholarCard />}
+          contentContainerStyle={{paddingLeft: s(15), gap: 25}}
+          data={Interviews}
+          renderItem={({item}) => (
+            <ScholarCard
+              item={item}
+              handlePlay={(selectedTrack: any, category: string) => {
+                handlePlayTrack(selectedTrack, (category = item.artist));
+              }}
+            />
+          )}
           horizontal
         />
 
@@ -175,11 +305,13 @@ const HomeScreen = ({navigation}) => {
         <FlatList
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingLeft: s(15), gap: 20}}
-          data={DATA}
+          data={Children}
           renderItem={({item}) => (
             <ScholarCard
-              title="Title"
-              image={require('../../assets/images/childrenPodacst.png')}
+              item={item}
+              handlePlay={(selectedTrack: any, category: string) => {
+                handlePlayTrack(selectedTrack, (category = item.artist));
+              }}
             />
           )}
           horizontal
@@ -187,12 +319,18 @@ const HomeScreen = ({navigation}) => {
         <CardHeader header={'English Production'} />
         <FlatList
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingLeft: s(15), gap: 20}}
-          data={DATA}
+          contentContainerStyle={{
+            gap: 14,
+            paddingBottom: vs(10),
+            paddingLeft: s(15),
+          }}
+          data={English}
           renderItem={({item}) => (
             <ScholarCard
-              title="Title"
-              image={require('../../assets/images/englishPodacst.png')}
+              item={item}
+              handlePlay={(selectedTrack: any, category: string) => {
+                handlePlayTrack(selectedTrack, (category = item.artist));
+              }}
             />
           )}
           horizontal
@@ -217,6 +355,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerTitle: {
     fontFamily: 'Inter-SemiBold',

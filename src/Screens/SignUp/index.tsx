@@ -1,5 +1,11 @@
 /* eslint-disable prettier/prettier */
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useState} from 'react';
 import AppInput from '../../components/AppInput';
 import AppButton from '../../components/Button';
@@ -17,7 +23,6 @@ import LottieView from 'lottie-react-native';
 import {horizontalScale} from '../../utils/scaling.ts';
 
 const SignupScreen = ({navigation}) => {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showLoader, setShowLoader] = useState(false);
@@ -29,20 +34,20 @@ const SignupScreen = ({navigation}) => {
   const onSubmit = async () => {
     setShowLoader(true);
     try {
-      if (!name || !email || password.length < 8) {
+      if (!email || password.length < 8) {
         setSuccess('inputs');
         setVisible(true);
       } else {
-        const res = await signUp(name, email, password);
+        const res = await signUp(email, password);
         console.log('res', res);
         if (res === 201) {
           setSuccess('200');
           setVisible(true);
         } else if (res === 400) {
-          setSuccess('200');
+          setSuccess('400');
           setVisible(true);
         } else {
-          setSuccess('200');
+          setSuccess('400');
           setVisible(true);
         }
       }
@@ -59,7 +64,9 @@ const SignupScreen = ({navigation}) => {
   return (
     <View style={styles.mainView}>
       <View style={styles.header}>
-        <LeftArrow />
+        <Pressable onPress={() => navigation.goBack()}>
+          <LeftArrow />
+        </Pressable>
         <Text style={styles.headerText}>Sign up and get started </Text>
       </View>
       <Portal>
@@ -121,12 +128,6 @@ const SignupScreen = ({navigation}) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <AppInput
-        label="Name"
-        onChangeText={setName}
-        value={name}
-        placeholder="Enter your name"
-      />
       <AppInput
         label="Email"
         onChangeText={setEmail}

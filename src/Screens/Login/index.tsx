@@ -16,6 +16,7 @@ import LottieView from 'lottie-react-native';
 import {horizontalScale} from '../../utils/scaling.ts';
 import {Button, Dialog, Portal} from 'react-native-paper';
 import {setItem} from '../../api/localstorage';
+import {Pressable} from 'react-native-gesture-handler';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -48,14 +49,16 @@ const LoginScreen = ({navigation}) => {
 
   const successClick = () => {
     hideDialog();
-    navigation.replace('App');
+    navigation.replace('Add Profile');
   };
 
   const hideDialog = () => setVisible(false);
   return (
     <View style={styles.mainView}>
       <View style={styles.header}>
-        <LeftArrow />
+        <Pressable onPress={() => navigation.goBack()}>
+          <LeftArrow />
+        </Pressable>
         <Text style={styles.headerText}>Welcome back, Login</Text>
       </View>
       <Portal>

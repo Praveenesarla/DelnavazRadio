@@ -20,11 +20,9 @@ export const login = async (email: string, password: string) => {
 };
 
 // Signup
-export const signUp = async (name: string, email: string, password: string) => {
-  console.log('data', name, email, password);
+export const signUp = async (email: string, password: string) => {
   try {
     const response = await AuthAPIClient2.post('/register', {
-      name: name,
       email: email,
       password: password,
     });
@@ -77,5 +75,48 @@ export const getAllPodcast = async () => {
     return response;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getCategory = async (category: string) => {
+  try {
+    const response = await AuthAPIClient.get(`/podcast/category/${category}`);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getRoom = async () => {
+  try {
+    const response = await AuthAPIClient.get('/room');
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getProfile = async () => {
+  try {
+    const response = await AuthAPIClient2.get('/me');
+    console.log('ress', response);
+    return response;
+    
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addProfile = async (phone: string, name: string) => {
+  try {
+    const response = await AuthAPIClient2.put('/update', {
+      phone: phone,
+      name: name,
+    });
+    console.log('apii', response);
+    return response;
+  } catch (e: any) {
+    console.log('api', e);
+    return e;
   }
 };

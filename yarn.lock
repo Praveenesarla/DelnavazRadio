@@ -2457,10 +2457,10 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@stream-io/react-native-webrtc@^124.0.2":
-  version "124.0.2"
-  resolved "https://registry.yarnpkg.com/@stream-io/react-native-webrtc/-/react-native-webrtc-124.0.2.tgz#27f8915549e10291dd04042c7fb055efc1c446e2"
-  integrity sha512-aLixAtX9FO1EJUrsH9ZCqPzbT3XskS+EEzJexrWklcV0nK/upghN2op1/bmP8qOBlS9Frn5bUA5WMgkJ8oc4xQ==
+"@stream-io/react-native-webrtc@^118.1.1":
+  version "118.1.2"
+  resolved "https://registry.yarnpkg.com/@stream-io/react-native-webrtc/-/react-native-webrtc-118.1.2.tgz#392079c4dde53209e8703b4d02d516071b9aebfa"
+  integrity sha512-l1S2Ki4dZNfcu51TdXz+QZuVsLdnKCtm2MsbnatN00b7zVnFuaz6Gy5ylc3G3aAKaHcdtCSpLecXxP8oZh3goQ==
   dependencies:
     base64-js "1.5.1"
     debug "4.3.4"
@@ -2488,7 +2488,7 @@
     i18next "^23.5.1"
     rxjs "~7.8.1"
 
-"@stream-io/video-react-native-sdk@^1.5.1":
+"@stream-io/video-react-native-sdk@^1.0.8":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@stream-io/video-react-native-sdk/-/video-react-native-sdk-1.5.1.tgz#de8a2dbeea27a07d4f020b6f10ad3f44e909ad9a"
   integrity sha512-E/fcT9/13LfB3v+EKmBouPG9CZVlqJhJZMUOGu1qvBJcePlN1bmoVFkp30hBFR8492dcun+skHfoIHcDCNLTXA==

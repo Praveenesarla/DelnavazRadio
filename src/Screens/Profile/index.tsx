@@ -1,10 +1,12 @@
 /* eslint-disable prettier/prettier */
 import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ms, s, vs} from 'react-native-size-matters';
 import ProfileOption from '../../components/ProfileOption';
+import {getProfile} from '../../api/auth';
 
 const Profile = ({navigation}) => {
+  const [name, setName] = useState('');
   const profileData = [
     {id: 1, title: 'Edit Profile', screenName: 'EditProfile'},
     {id: 2, title: 'Help & Support', screenName: 'HelpAndSupport'},
@@ -18,11 +20,21 @@ const Profile = ({navigation}) => {
     {id: 10, title: 'Logout', screeName: 'Auth'},
   ];
 
+  useEffect(() => {
+    getName();
+  }, []);
+
+  const getName = async () => {
+    const response = await getProfile();
+    console.log('reposne', response?.data.data?.name);
+    setName(response?.data.data?.name);
+  };
+
   return (
     <ScrollView style={styles.mainContainer}>
       <View style={styles.firstPart}>
         <View style={styles.profilePic} />
-        <Text style={styles.profileName}>Gracia Tya</Text>
+        <Text style={styles.profileName}>{name}</Text>
       </View>
       <View style={styles.profileMenuContainer}>
         <FlatList

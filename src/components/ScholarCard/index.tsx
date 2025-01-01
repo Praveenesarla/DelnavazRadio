@@ -1,16 +1,18 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {ms, s, vs} from 'react-native-size-matters';
 
 const ScholarCard = ({
   title = 'Master Of Truth',
   image = require('../../assets/images/cards/scholar.png'),
+  handlePlay,
+  item,
 }) => {
   return (
-    <View style={styles.container}>
-      <Image source={image} style={styles.image} />
-      <Text style={styles.title}>{title}</Text>
-    </View>
+    <Pressable style={styles.container} onPress={() => handlePlay(item)}>
+      <Image source={{uri: item?.artwork}} style={styles.image} />
+      <Text style={styles.title}> {item?.title || 'Title'}</Text>
+    </Pressable>
   );
 };
 
@@ -18,14 +20,15 @@ export default ScholarCard;
 
 const styles = StyleSheet.create({
   container: {
-    width: s(240),
-    height: vs(200),
+    width: s(215),
+    height: vs(140),
     overflow: 'hidden',
+    borderRadius: 20,
   },
   image: {
     width: '100%',
-    height: '80%',
-    resizeMode: 'contain',
+    height: '100%',
+    resizeMode: 'cover',
   },
   title: {
     fontFamily: 'Inter-SemiBold',

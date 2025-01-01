@@ -18,9 +18,9 @@ const TopPodcastCard = ({handlePlay, item}) => {
       </View>
       <View style={{paddingHorizontal: s(12)}}>
         <Text style={styles.title} numberOfLines={1}>
-          {item.title}
+          {item?.title || 'Title'}
         </Text>
-        <Text style={styles.category}>{item.artist}</Text>
+        <Text style={styles.category}>{item?.artist || 'Category'}</Text>
       </View>
     </Pressable>
   );

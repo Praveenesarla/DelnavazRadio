@@ -158,9 +158,7 @@ const App = () => {
   return (
     <PaperProvider>
       <GestureHandlerRootView style={{flex: 1}}>
-        <Text style={{fontSize: 50}} onPress={onGoogleButtonPress}>
-          Google
-        </Text>
+        <MainNavigation />
       </GestureHandlerRootView>
     </PaperProvider>
   );
