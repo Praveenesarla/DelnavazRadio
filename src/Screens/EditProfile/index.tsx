@@ -1,15 +1,22 @@
-/* eslint-disable prettier/prettier */
 import {Pressable, StyleSheet, Text, View, Alert} from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ms, vs} from 'react-native-size-matters';
 import ProfileInput from '../../components/ProfileInput';
 import AppButton from '../../components/Button';
 import LeftArrow from '../../assets/icons/LeftArrow';
-import {addProfile} from '../../api/auth';
+import {addProfile, getProfile} from '../../api/auth';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext';
 
 const EditProfile = ({navigation}) => {
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
+
+  useEffect(() => {
+    checkData();
+  }, []);
 
   const addData = async () => {
     try {
@@ -23,30 +30,41 @@ const EditProfile = ({navigation}) => {
     }
   };
 
+  const checkData = async () => {
+    const res = await getProfile();
+    console.log('res', res?.data.data);
+    if (res?.data.data.name) {
+      setName(res?.data.data.name);
+    }
+    if (res?.data.data.phone) {
+      setPhoneNumber(res?.data.data.phone);
+    }
+  };
+
   return (
     <View style={styles.mainView}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()}>
           <LeftArrow />
         </Pressable>
-        <Text style={styles.headerText}>Edit Profile Details</Text>
+        <Text style={styles.headerText}>{t('EditProfileDetails')}</Text>
       </View>
       <View style={styles.inputContainer}>
         <ProfileInput
-          label="Name"
-          placeholder="Enter your Name"
+          label={t('name')}
+          placeholder={t('enterName')}
           onChangeText={setName}
           value={name}
         />
         <ProfileInput
-          label="Phone Number"
-          placeholder="Enter your Phone Number"
+          label={t('PhoneNumber')}
+          placeholder={t('EnteryourPhone')}
           onChangeText={setPhoneNumber}
           value={phoneNumber}
         />
       </View>
       <View style={styles.buttonContainer}>
-        <AppButton text="Save Profile" onPress={addData} />
+        <AppButton text={t('saveProfile')} onPress={addData} />
       </View>
     </View>
   );

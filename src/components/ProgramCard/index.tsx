@@ -2,6 +2,7 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {ms, s, vs} from 'react-native-size-matters';
+import {useTranslation} from 'react-i18next';
 
 const ProgramCard = ({
   title = 'Exploration of Music’s Profound Impact',
@@ -9,17 +10,22 @@ const ProgramCard = ({
   host = 'Mrs. Parnian',
   imageSource = require('../../assets/images/cards/event.png'),
 }) => {
+  const {t} = useTranslation();
   return (
     <Pressable style={styles.container}>
       <Image source={imageSource} style={styles.imageStyle} />
       <View style={styles.content}>
-        <Text style={styles.headStyle}>{title}</Text>
+        <Text style={styles.headStyle}>
+          {t('ExplorationMusicProfoundImpact')}
+        </Text>
         <Text numberOfLines={4} style={styles.descStyle}>
-          {description}
+          {t('programCardContent')}
         </Text>
         <View style={styles.authorContainer}>
           <Image source={imageSource} style={styles.authorImage} />
-          <Text style={styles.author}>Hosted by {host}</Text>
+          <Text style={styles.author}>
+            {t('programCardHost')} {t('programCardHostName')}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -47,16 +53,19 @@ const styles = StyleSheet.create({
     fontSize: ms(17),
     fontWeight: '600',
     color: '#251605',
+    textAlign: 'left',
   },
   descStyle: {
     fontFamily: 'Inter-Regular',
     fontSize: ms(14),
     color: '#424242',
+    textAlign: 'left',
   },
   author: {
     fontSize: ms(12),
     fontFamily: 'Inter-Medium',
     color: '#251605',
+    textAlign: 'left',
   },
   content: {padding: 14, gap: 8},
   authorContainer: {flexDirection: 'row', alignItems: 'center', gap: 5},

@@ -40,12 +40,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: ms(15),
     color: '#424242',
+    textAlign: 'left',
   },
   input: {
     width: s(320),
     height: vs(35),
     backgroundColor: '#E6E8E7',
     borderRadius: 6,
+    textAlign: 'left',
   },
 });
 

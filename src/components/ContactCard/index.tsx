@@ -1,8 +1,12 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {ms, s, vs} from 'react-native-size-matters';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext';
 
 const ContactCard = () => {
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
   return (
     <View style={styles.mainContainer}>
       <View style={styles.logoAndCompany}>
@@ -11,13 +15,15 @@ const ContactCard = () => {
           style={styles.logo}
         />
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Delnavaz Persian Radio</Text>
-          <Text style={styles.description}>Iranian, Orange County Podcast</Text>
+          <Text style={styles.title}>{t('delnavazRadio')}</Text>
+          <Text style={styles.description}>
+            {t('IraninaOrangeCountyPodcast')}
+          </Text>
         </View>
       </View>
       <View style={styles.line} />
       <View style={styles.lastContainer}>
-        <Text style={styles.trademark}>© 2024 Delnavaz Radio</Text>
+        <Text style={styles.trademark}>{t('trademark')}</Text>
         <View style={styles.socialmediaContainer}>
           <Image
             source={require('../../assets/ContactCard/instagram.png')}
@@ -53,11 +59,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     fontSize: ms(16),
     color: '#FFFFFF',
+    textAlign: 'left',
   },
   description: {
     fontFamily: 'Inter-Regular',
     fontSize: ms(12),
     color: '#FFFFFF',
+    textAlign: 'left',
   },
   line: {backgroundColor: '#FFFFFF', height: vs(0.5)},
   lastContainer: {
@@ -70,6 +78,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: ms(12),
     color: '#FFFFFF',
+    textAlign: 'left',
   },
   socialmediaContainer: {flexDirection: 'row', gap: 10},
   logoAndCompany: {gap: 5},

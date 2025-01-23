@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingLeft: 10,
+    textAlign: 'left',
   },
   icon: {
     marginRight: 10,

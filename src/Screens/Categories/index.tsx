@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
   FlatList,
   ScrollView,
@@ -6,22 +5,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ms, s, vs} from 'react-native-size-matters';
 import CardHeader from '../../components/CardHeader';
 import TopPodcastCard from '../../components/TopPodcastCard';
 import ScholarCard from '../../components/ScholarCard';
 import AppIcon from '../../assets/images/logo/AppIcon';
 import Icon from 'react-native-vector-icons/Octicons';
-import {getItem, setItem} from '../../api/localstorage';
 import {useNotifications} from '../../utils/NotificationContext';
 import TrackPlayer, {useActiveTrack} from 'react-native-track-player';
 import {getAllPodcast, getCategory} from '../../api/auth';
 import FloatingPlayer from '../../components/FloatingPlayer';
+import {Skeleton} from 'native-base';
+import LanguageContext from '../../utils/LanguageContext';
+import {useTranslation} from 'react-i18next';
 
 const CategoriesScreen = () => {
   const activeTrack = useActiveTrack();
-  const [notifications, setNotifications] = useState(true);
   const [podcasts, setPodcasts] = useState(null);
   const [History, setHistory] = useState(null);
   const [Comedy, setComedy] = useState(null);
@@ -31,54 +31,28 @@ const CategoriesScreen = () => {
   const [Interviews, setInterviews] = useState(null);
   const [Children, setChildren] = useState(null);
   const [English, setEnglish] = useState(null);
-
-  const DATA: ItemData[] = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-  ];
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
+  const {notifications, toggleNotifications} = useNotifications();
 
   useEffect(() => {
     allSongs();
-    getHistory();
-    getBiography();
-    getChildren();
-    getComedy();
-    getInterview();
-    getLiterature();
-    getEnglish();
-    getMysticism();
+    getCategoryData('/History', setHistory);
+    getCategoryData('/Comedy', setComedy);
+    getCategoryData('/literature', setLiterature);
+    getCategoryData('/Biography', setBiography);
+    getCategoryData('/Mysticism', setMysticism);
+    getCategoryData('/Interview', setInterviews);
+    getCategoryData('/Children', setChildren);
+    getCategoryData('/English', setEnglish);
   }, []);
 
   const allSongs = async () => {
     try {
       const response = await getAllPodcast();
       if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-
-        setPodcasts(transTracks);
+        const tracks = response.data.data.map(transformTrack);
+        setPodcasts(tracks);
       } else {
         console.error('Failed to fetch podcasts:', response?.data.message);
       }
@@ -87,257 +61,43 @@ const CategoriesScreen = () => {
     }
   };
 
-  const getHistory = async () => {
+  const getCategoryData = async (endpoint, setState) => {
     try {
-      const response = await getCategory('/History');
+      const response = await getCategory(endpoint);
       if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setHistory(transTracks);
+        const tracks = response.data.data.map(transformTrack);
+        setState(tracks);
       } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
+        console.error(
+          `Failed to fetch ${endpoint} podcasts:`,
+          response?.data.message,
+        );
       }
     } catch (error) {
-      console.error('Error fetching podcasts:', error);
+      console.error(`Error fetching ${endpoint} podcasts:`, error);
     }
   };
 
-  const getComedy = async () => {
-    try {
-      const response = await getCategory('/Comedy');
-      if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setComedy(transTracks);
-      } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching podcasts:', error);
-    }
-  };
+  const transformTrack = track => ({
+    url: track.recordingfile.url,
+    title: track.name,
+    artist: track.category,
+    artwork: track.bannerimage.url,
+  });
 
-  const getLiterature = async () => {
-    try {
-      const response = await getCategory('/literature');
-      if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setLiterature(transTracks);
-      } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching podcasts:', error);
-    }
-  };
-  const getBiography = async () => {
-    try {
-      const response = await getCategory('/Biography');
-      if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setBiography(transTracks);
-      } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching podcasts:', error);
-    }
-  };
-
-  const getMysticism = async () => {
-    try {
-      const response = await getCategory('/Mysticism');
-      if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setMysticism(transTracks);
-      } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching podcasts:', error);
-    }
-  };
-
-  const getInterview = async () => {
-    try {
-      const response = await getCategory('/Interview');
-      if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setInterviews(transTracks);
-      } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching podcasts:', error);
-    }
-  };
-
-  const getChildren = async () => {
-    try {
-      const response = await getCategory('/Children');
-      if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setChildren(transTracks);
-      } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching podcasts:', error);
-    }
-  };
-
-  const getEnglish = async () => {
-    try {
-      const response = await getCategory('/English');
-      if (response?.data.status === 200) {
-        const tracks = response.data.data;
-        const transTracks = tracks.map(
-          (track: {
-            recordingfile: {url: any};
-            name: any;
-            category: any;
-            bannerimage: {url: any};
-          }) => ({
-            url: track.recordingfile.url,
-            title: track.name,
-            artist: track.category,
-            artwork: track.bannerimage.url,
-          }),
-        );
-        console.log('History', transTracks);
-        setEnglish(transTracks);
-      } else {
-        console.error('Failed to fetch podcasts:', response?.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching podcasts:', error);
-    }
-  };
-
-  const handlePlayTrack = async (
-    selectedTrack: AddTrack[],
-    category: string,
-    songs: null,
-  ) => {
-    if (category === 'top') {
-      songs = podcasts;
-    } else if (category === 'History') {
-      songs = History;
-    } else if (category === 'Comedy') {
-      songs = Comedy;
-    } else if (category === 'literature') {
-      songs = Literature;
-    } else if (category === 'Biography') {
-      songs = Biography;
-    } else if (category === 'Mysticism') {
-      songs = Mysticism;
-    } else if (category === 'Interview') {
-      songs = Interviews;
-    } else if (category === 'Children') {
-      songs = Children;
-    } else if (category === 'English') {
-      songs = English;
-    } else {
-      songs = podcasts;
-    }
-
-    console.log(selectedTrack);
+  const handlePlayTrack = async (selectedTrack, category) => {
+    const songs =
+      {
+        top: podcasts,
+        History,
+        Comedy,
+        literature: Literature,
+        Biography,
+        Mysticism,
+        Interview: Interviews,
+        Children,
+        English,
+      }[category] || podcasts;
 
     const trackIndex = songs?.findIndex(
       track => track?.url === selectedTrack.url,
@@ -347,224 +107,215 @@ const CategoriesScreen = () => {
       return;
     }
 
-    const beforeTracks = songs?.slice(0, trackIndex);
-    const afterTracks = songs?.slice(trackIndex + 1);
+    const beforeTracks = songs.slice(0, trackIndex);
+    const afterTracks = songs.slice(trackIndex + 1);
 
     await TrackPlayer.reset();
-
     await TrackPlayer.add(selectedTrack);
-
     await TrackPlayer.add(afterTracks);
-
     await TrackPlayer.add(beforeTracks);
-
     await TrackPlayer.play();
   };
 
   return (
     <>
-      <ScrollView>
-        <View style={styles.header}>
-          <AppIcon width={s(48)} height={vs(48)} />
-          <TouchableOpacity
+      {!podcasts ||
+      !History ||
+      !Comedy ||
+      !Children ||
+      !Literature ||
+      !English ? (
+        <View style={{paddingHorizontal: 15}}>
+          <View
             style={{
-              width: 50,
-              height: 50,
-              backgroundColor: 'white',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 25,
+              marginTop: 20,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
             }}>
-            <Icon
-              name={notifications ? 'bell' : 'bell-slash'}
-              size={25}
-              color="black"
-            />
-          </TouchableOpacity>
+            <Skeleton size="60" rounded="full" startColor={'coolGray.300'} />
+            <Skeleton size="60" rounded="full" startColor={'coolGray.300'} />
+          </View>
+          <View style={{marginVertical: 20}}>
+            <Skeleton.Text w="56" startColor={'coolGray.300'} lines={1} />
+          </View>
+          <View
+            style={{
+              marginTop: 13,
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+            }}>
+            <Skeleton w="40" h="48" rounded="xl" startColor={'coolGray.300'} />
+            <Skeleton w="40" h="48" rounded="xl" startColor={'coolGray.300'} />
+          </View>
+          <View style={{marginVertical: 30}}>
+            <Skeleton.Text w="56" startColor={'coolGray.300'} lines={1} />
+          </View>
+          <View
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              marginVertical: 10,
+            }}>
+            <Skeleton w="56" h="40" rounded="xl" />
+            <Skeleton w="56" h="40" rounded="xl" />
+          </View>
+          <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+            <Skeleton w="56" h="40" rounded="xl" />
+            <Skeleton w="56" h="40" rounded="xl" />
+          </View>
         </View>
-        <CardHeader header={'Top podcast of the week'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={podcasts}
-          renderItem={({item}) => (
-            <TopPodcastCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = 'top'));
+      ) : (
+        <>
+          <ScrollView>
+            <View style={styles.header}>
+              <AppIcon width={s(48)} height={vs(48)} />
+              <TouchableOpacity
+                onPress={toggleNotifications}
+                style={{
+                  width: 50,
+                  height: 50,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 25,
+                }}>
+                <Icon
+                  name={notifications ? 'bell' : 'bell-slash'}
+                  size={25}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+            <CardHeader header={t('topPodcast')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 15,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={podcasts}
+              renderItem={({item}) => (
+                <TopPodcastCard
+                  item={item}
+                  handlePlay={selectedTrack =>
+                    handlePlayTrack(selectedTrack, 'top')
+                  }
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'History Podcasts'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={History}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
+            <CardHeader header={t('hisPodcast')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 15,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={History}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={selectedTrack =>
+                    handlePlayTrack(selectedTrack, item.artist)
+                  }
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'Comedy Podcasts'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={Comedy}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
+            <CardHeader header={t('comedyPod')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 15,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={Comedy}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={selectedTrack =>
+                    handlePlayTrack(selectedTrack, item.artist)
+                  }
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'Biograpghy Podcasts'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={Biography}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
+            <CardHeader header={t('biographyPod')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 15,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={Biography}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={selectedTrack =>
+                    handlePlayTrack(selectedTrack, item.artist)
+                  }
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'Mysticism Podcasts'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={Mysticism}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
+            <CardHeader header={t('mystiPod')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 15,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={Mysticism}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={selectedTrack =>
+                    handlePlayTrack(selectedTrack, item.artist)
+                  }
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'Interview with scholars'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={Interviews}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
+            <CardHeader header={t('interviewScholars')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 15,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={Interviews}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={selectedTrack =>
+                    handlePlayTrack(selectedTrack, item.artist)
+                  }
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'Children’s products'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={Children}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
-              }}
-            />
-          )}
-          horizontal
-        />
-        <CardHeader header={'English Production'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={English}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
-              }}
-            />
-          )}
-          horizontal
-        />
-        <CardHeader header={'Literature'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={Literature}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
-              }}
-            />
-          )}
-          horizontal
-        />
-      </ScrollView>
-      {activeTrack && <FloatingPlayer />}
+          </ScrollView>
+          {activeTrack && <FloatingPlayer />}
+        </>
+      )}
     </>
   );
 };
 
-export default CategoriesScreen;
-
 const styles = StyleSheet.create({
   header: {
+    marginTop: ms(12),
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 15,
+    alignItems: 'center',
+    paddingHorizontal: ms(20),
   },
 });
+
+export default CategoriesScreen;

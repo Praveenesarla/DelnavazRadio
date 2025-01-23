@@ -5,12 +5,13 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import AppInput from '../../components/AppInput';
 import EventCard from '../../components/EventCard';
 import ScholarCard from '../../components/ScholarCard';
@@ -29,13 +30,20 @@ import {getAllPodcast, getCategory} from '../../api/auth';
 import Icon from 'react-native-vector-icons/Octicons';
 import {getItem, getToken, setItem} from '../../api/localstorage';
 import {useNotifications} from '../../utils/NotificationContext';
+import {Skeleton} from 'native-base';
+import LanguageContext from '../../utils/LanguageContext';
+import {useTranslation} from 'react-i18next';
 
 const HomeScreen = ({navigation}) => {
   const [podcasts, setPodcasts] = useState<object[] | null>(null);
+  const [isEnabled, setIsEnabled] = useState(false);
+
   const [Interviews, setInterviews] = useState(null);
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
   const [Children, setChildren] = useState(null);
   const [English, setEnglish] = useState(null);
-  const [notifications, setNotifications] = useState(true);
+  const {notifications, toggleNotifications} = useNotifications(); // Context state and toggler
   const activeTrack = useActiveTrack();
   const DATA: ItemData[] = [
     {
@@ -54,6 +62,11 @@ const HomeScreen = ({navigation}) => {
 
   const displayAlert = () => {
     Alert.alert('Floating Action Button Pressed!');
+  };
+
+  const toggleSwitch = () => {
+    // Set language to 'fa' if currently 'en', otherwise set to 'en'
+    setLanguage(language === 'en' ? 'fa' : 'en');
   };
 
   useEffect(() => {
@@ -218,133 +231,204 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <>
-      <ScrollView
-        contentContainerStyle={{alignItems: 'center', paddingBottom: vs(25)}}
-        style={{flex: 1}}>
-        {/* Header  */}
-        <View style={{gap: 15, paddingTop: vs(25)}}>
-          <View style={styles.header}>
-            <AppIcon width={s(48)} height={vs(48)} />
-            {/* <Image
+      {!podcasts || !English || !Interviews ? (
+        <View style={{flex: 1, paddingHorizontal: 15}}>
+          <View
+            style={{
+              marginTop: 20,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <Skeleton size="60" rounded="full" startColor={'coolGray.300'} />
+            <Skeleton size="60" rounded="full" startColor={'coolGray.300'} />
+          </View>
+          <View style={{marginVertical: 30}}>
+            <Skeleton.Text lines={2} startColor={'coolGray.300'} />
+          </View>
+          <View style={{marginVertical: 40}}>
+            <Skeleton
+              w="full"
+              h="16"
+              rounded="2xl"
+              startColor={'coolGray.300'}
+            />
+          </View>
+          <View>
+            <Skeleton
+              w="full"
+              h="48"
+              rounded="lg"
+              startColor={'coolGray.300'}
+            />
+          </View>
+          <View style={{marginTop: 10}}>
+            <Skeleton.Text lines={2} startColor={'coolGray.300'} />
+          </View>
+
+          <View
+            style={{
+              marginTop: 13,
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+            }}>
+            <Skeleton w="40" h="40" rounded="xl" />
+            <Skeleton w="40" h="40" rounded="xl" />
+          </View>
+        </View>
+      ) : (
+        <>
+          <ScrollView
+            contentContainerStyle={{
+              alignItems: 'center',
+              paddingBottom: vs(25),
+            }}
+            style={{flex: 1}}>
+            {/* Header  */}
+            <View style={{gap: 15, paddingTop: vs(25)}}>
+              <View style={styles.header}>
+                <AppIcon width={s(48)} height={vs(48)} />
+                {/* <Image
               source={require('../../assets/icons/bell.png')}
               style={{width: s(42), height: vs(40)}}
             /> */}
-            <TouchableOpacity
-              style={{
-                width: 50,
-                height: 50,
-                backgroundColor: 'white',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 25,
-              }}>
-              <Icon
-                name={notifications ? 'bell' : 'bell-slash'}
-                size={25}
-                color="black"
+                <View
+                  style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+                  <Text
+                    style={{color: language === 'en' ? '#767577' : '#463730'}}>
+                    Farsi Version
+                  </Text>
+                  <Switch
+                    // trackColor={{false: '#767577', true: '#81b0ff'}}
+                    thumbColor={language === 'fa' ? '#f5dd4b' : '#f4f3f4'} // Adjust thumb color based on language
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={toggleSwitch}
+                    value={language === 'fa'} // Switch is enabled if language is Farsi
+                  />
+                  <TouchableOpacity
+                    onPress={toggleNotifications}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      backgroundColor: 'white',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 25,
+                    }}>
+                    <Icon
+                      name={notifications ? 'bell' : 'bell-slash'}
+                      size={25}
+                      color="black"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <Text style={styles.headerTitle}>{t('whatToday')}</Text>
+              <SearchInput
+                onChangeText={() => {}}
+                placeholder={t('searchPodcast')}
               />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.headerTitle}>
-            What kind of podcast do you want to hear today?
-          </Text>
-          <SearchInput onChangeText={() => {}} placeholder="Search Podcast" />
-        </View>
-        {/* podcast Card */}
-        <View style={{paddingTop: vs(20)}}>
-          <RecentPodcastCard />
-        </View>
-        {/* podcast Card */}
-        {/* carousel card list */}
-        <CardHeader header={'Top podcast of the week'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 15,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={podcasts}
-          renderItem={({item}) => (
-            <TopPodcastCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = 'top'));
+            </View>
+            {/* podcast Card */}
+            <View style={{paddingTop: vs(20)}}>
+              <RecentPodcastCard />
+            </View>
+            {/* podcast Card */}
+            {/* carousel card list */}
+            <CardHeader header={t('topPodcast')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 15,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={podcasts}
+              renderItem={({item}) => (
+                <TopPodcastCard
+                  item={item}
+                  handlePlay={(selectedTrack: any, category: string) => {
+                    handlePlayTrack(selectedTrack, (category = 'top'));
+                  }}
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        {/* carousel card list */}
+            {/* carousel card list */}
 
-        <CardHeader header={'Interview with scholars'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingLeft: s(15), gap: 25}}
-          data={Interviews}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
-              }}
+            <CardHeader header={t('interviewScholars')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{paddingLeft: s(15), gap: 25}}
+              data={Interviews}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={(selectedTrack: any, category: string) => {
+                    handlePlayTrack(selectedTrack, (category = item.artist));
+                  }}
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
 
-        <CardHeader header={'Events Happening'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{gap: 25, paddingLeft: s(15)}}
-          data={DATA}
-          renderItem={({item}) => <EventCard />}
-          horizontal
-        />
-        <CardHeader header={'Children’s Products'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingLeft: s(15), gap: 20}}
-          data={Children}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
+            <CardHeader header={t('EventsHappen')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 25,
+                paddingLeft: s(15),
+                marginBottom: 20,
               }}
+              data={DATA}
+              renderItem={({item}) => <EventCard />}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'English Production'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 14,
-            paddingBottom: vs(10),
-            paddingLeft: s(15),
-          }}
-          data={English}
-          renderItem={({item}) => (
-            <ScholarCard
-              item={item}
-              handlePlay={(selectedTrack: any, category: string) => {
-                handlePlayTrack(selectedTrack, (category = item.artist));
+            <CardHeader header={t('childrenProduct')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{paddingLeft: s(15), gap: 20}}
+              data={Children}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={(selectedTrack: any, category: string) => {
+                    handlePlayTrack(selectedTrack, (category = item.artist));
+                  }}
+                />
+              )}
+              horizontal
+            />
+            <CardHeader header={t('engProd')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 14,
+                paddingBottom: vs(10),
+                paddingLeft: s(15),
               }}
+              data={English}
+              renderItem={({item}) => (
+                <ScholarCard
+                  item={item}
+                  handlePlay={(selectedTrack: any, category: string) => {
+                    handlePlayTrack(selectedTrack, (category = item.artist));
+                  }}
+                />
+              )}
+              horizontal
             />
-          )}
-          horizontal
-        />
-        <CardHeader header={'Top Programs Curated for you'} />
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{gap: 30, paddingLeft: s(15)}}
-          data={DATA}
-          renderItem={({item}) => <ProgramCard />}
-          horizontal
-        />
-      </ScrollView>
-      {activeTrack && <FloatingPlayer />}
+            <CardHeader header={t('TopPrograms')} />
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{gap: 30, paddingLeft: s(15)}}
+              data={DATA}
+              renderItem={({item}) => <ProgramCard />}
+              horizontal
+            />
+          </ScrollView>
+          {activeTrack && <FloatingPlayer />}
+        </>
+      )}
     </>
   );
 };
@@ -361,5 +445,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     fontSize: ms(24),
     color: '#251605',
+    textAlign: 'left',
   },
 });

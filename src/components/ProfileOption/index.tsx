@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import ProfileArrow from '../../assets/icons/ProfileArrow';
 import {ms, s, vs} from 'react-native-size-matters';
 import {removeItem} from '../../api/localstorage';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext';
 
 interface ProfileOptionProps {
   item: {
@@ -13,6 +15,8 @@ interface ProfileOptionProps {
 }
 
 const ProfileOption: React.FC<ProfileOptionProps> = ({item, navigation}) => {
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
   const onPressNavigation = () => {
     if (item.title === 'Logout') {
       removeItem('authenticate');
@@ -27,7 +31,7 @@ const ProfileOption: React.FC<ProfileOptionProps> = ({item, navigation}) => {
 
   return (
     <TouchableOpacity style={styles.mainContainer} onPress={onPressNavigation}>
-      <Text style={styles.profileText}>{item.title}</Text>
+      <Text style={styles.profileText}>{t(item.title)}</Text>
       <ProfileArrow />
     </TouchableOpacity>
   );

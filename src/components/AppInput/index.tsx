@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React from 'react';
 import {View, TextInput, StyleSheet, TextInputProps, Text} from 'react-native';
 import {ms, s, vs} from 'react-native-size-matters';
@@ -27,6 +26,7 @@ const AppInput: React.FC<AppInputProps> = ({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={'#C6C6C6'}
+        textAlign="left"
       />
     </View>
   );
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#424242',
     fontSize: ms(16),
+    textAlign: 'left',
   },
   container: {
     margin: 10,

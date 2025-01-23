@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import AppNavigator from './AppNavigator';
@@ -16,10 +15,12 @@ import ProgramsAndHosts from '../Screens/ProgramsAndHosts';
 import HelpAndSupport from '../Screens/HelpAndSupport';
 import ProgramContent from '../Screens/ProgramContent';
 import PlayerScreen from '../Screens/PlayerScreen';
+import {useTranslation} from 'react-i18next';
 
 const Stack = createStackNavigator();
 
 const MainNavigation = () => {
+  const {t} = useTranslation();
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -39,27 +40,51 @@ const MainNavigation = () => {
           component={AppNavigator}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="About Us" component={AboutUs} />
+        <Stack.Screen
+          name="About Us"
+          component={AboutUs}
+          options={{title: 'About Us'}}
+        />
         <Stack.Screen
           name="AccountPrivacy"
           component={AccountPrivacy}
-          options={{headerShown: false}}
+          options={{title: t('AccountPrivacy'), headerShown: true}}
         />
         <Stack.Screen
           name="EditProfile"
           component={EditProfile}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="Founders" component={Founders} />
-        <Stack.Screen name="HelpAndSupport" component={HelpAndSupport} />
-        <Stack.Screen name="NonProfit" component={NonProfit} />
-        <Stack.Screen name="PressAndEvents" component={PressAndEvents} />
+        <Stack.Screen
+          name="Founders"
+          component={Founders}
+          options={{title: t('Founders')}}
+        />
+        <Stack.Screen
+          name="HelpAndSupport"
+          component={HelpAndSupport}
+          options={{title: t('HelpSupport')}}
+        />
+        <Stack.Screen
+          name="NonProfit"
+          component={NonProfit}
+          options={{title: t('NonProfit')}}
+        />
+        <Stack.Screen
+          name="PressAndEvents"
+          component={PressAndEvents}
+          options={{title: t('PressEvents')}}
+        />
         <Stack.Screen
           name="PrivacyPolicy"
           component={PrivacyPolicy}
-          options={{headerShown: false}}
+          options={{title: t('PrivacyPolicy'), headerShown: true}}
         />
-        <Stack.Screen name="ProgramAndHost" component={ProgramsAndHosts} />
+        <Stack.Screen
+          name="ProgramAndHost"
+          component={ProgramsAndHosts}
+          options={{title: t('ProgramsHosts')}}
+        />
         <Stack.Screen
           name="ProgramContent"
           component={ProgramContent}

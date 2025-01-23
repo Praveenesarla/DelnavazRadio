@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import AppInput from '../../components/AppInput';
 import AppButton from '../../components/Button';
 import {
@@ -21,6 +21,8 @@ import {login, signUp} from '../../api/auth';
 import {Button, Dialog, Modal, Portal} from 'react-native-paper';
 import LottieView from 'lottie-react-native';
 import {horizontalScale} from '../../utils/scaling.ts';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext.js';
 
 const SignupScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -28,6 +30,8 @@ const SignupScreen = ({navigation}) => {
   const [showLoader, setShowLoader] = useState(false);
   const [visible, setVisible] = React.useState(false);
   const [success, setSuccess] = useState('inputs');
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
 
   const hideDialog = () => setVisible(false);
 
@@ -67,7 +71,7 @@ const SignupScreen = ({navigation}) => {
         <Pressable onPress={() => navigation.goBack()}>
           <LeftArrow />
         </Pressable>
-        <Text style={styles.headerText}>Sign up and get started </Text>
+        <Text style={styles.headerText}>{t('signupHeader')}</Text>
       </View>
       <Portal>
         <Dialog
@@ -87,17 +91,17 @@ const SignupScreen = ({navigation}) => {
           <Dialog.Content style={{alignItems: 'center'}}>
             {success === '400' ? (
               <>
-                <Text>Account Already Exists</Text>
-                <Text>Please LogIn</Text>
+                <Text>{t('AccountAlreadyExists')}</Text>
+                <Text>{t('PleaseLogIn')}</Text>
               </>
             ) : success === 'inputs' ? (
               <>
                 <Text style={{color: 'red', fontSize: 15}}>
-                  *Please fill all the fields
+                  {t('Pleasefill')}
                 </Text>
                 <Text style={{color: 'red', fontSize: 15}}>&</Text>
                 <Text style={{color: 'red', fontSize: 15}}>
-                  *Password should be min 8 characters
+                  {t('Password8characters')}
                 </Text>
               </>
             ) : (
@@ -110,7 +114,7 @@ const SignupScreen = ({navigation}) => {
                     style={{width: 80, height: 80}}
                   />
                   <Text style={{color: '#5cb85c', fontSize: 20}}>
-                    Account created Succesfully
+                    {t('AccountcreatedSuccesfully')}
                   </Text>
                 </>
               )
@@ -129,17 +133,17 @@ const SignupScreen = ({navigation}) => {
         </Dialog>
       </Portal>
       <AppInput
-        label="Email"
+        label={t('email')}
         onChangeText={setEmail}
         value={email}
-        placeholder="Enter your email"
+        placeholder={t('enterEmail')}
       />
       <AppInput
         secureTextEntry
-        label="Password"
+        label={t('password')}
         onChangeText={setPassword}
         value={password}
-        placeholder="Enter your password"
+        placeholder={t('enterPass')}
       />
       <View style={{marginTop: vs(24), marginBottom: vs(10)}}>
         {showLoader ? (
@@ -157,7 +161,11 @@ const SignupScreen = ({navigation}) => {
             />
           </TouchableOpacity>
         ) : (
-          <AppButton onPress={onSubmit} text="Next" backgroundColor="#463730" />
+          <AppButton
+            onPress={onSubmit}
+            text={t('next')}
+            backgroundColor="#463730"
+          />
         )}
       </View>
 
@@ -165,7 +173,7 @@ const SignupScreen = ({navigation}) => {
         <Text
           onPress={() => navigation.navigate('Login')}
           style={styles.alreadyText}>
-          Already have an account?Login
+          {t('alreadyAccount')}
         </Text>
       </View>
     </View>

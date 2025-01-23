@@ -34,5 +34,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     fontSize: ms(15),
     color: '#FFFFFF',
+    textAlign: 'left',
   },
 });

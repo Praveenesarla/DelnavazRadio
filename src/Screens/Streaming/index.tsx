@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   StreamVideo,
   StreamVideoClient,
@@ -14,17 +15,22 @@ import {
 } from 'react-native';
 import {CallScreen} from '../CallScreen';
 import LiveRoomCard from '../../components/LiveRoomCard';
+import enVariables from '../../utils/enVariables';
 
 const Streaming = () => {
   const [userDetails, setUserDetails] = useState<object | null>(null);
   const [client, setClient] = useState<StreamVideoClient | null>(null);
   const [activeScreen, setActiveScreen] = useState('home');
   const [rooms, setRooms] = useState([]);
+  const [roomsLoading, setRoomsLoading] = useState(true); // New loading state
   const [callId, setCallId] = useState('');
-  const apiKey = '9mzjbgzehkgq';
   const photo = null;
 
-  // Polling to update rooms periodically
+  console.log('url', process.env.API_URL);
+  console.log('apikey', enVariables.API_KEY);
+
+  const apiKey = '7fgb6ywjyxhk';
+
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -42,10 +48,13 @@ const Streaming = () => {
         }
       } catch (error) {
         console.error('Error fetching rooms:', error);
+      } finally {
+        setRoomsLoading(false); // Update loading state
       }
     };
 
     const interval = setInterval(fetchRooms, 5000); // Fetch rooms every 5 seconds
+    fetchRooms(); // Fetch initial rooms data
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [activeScreen, callId]);
 
@@ -57,7 +66,7 @@ const Streaming = () => {
 
     try {
       const response = await fetch(
-        'https://podcast-app-blush.vercel.app/generateUserToken',
+        'https://getstream-token.vercel.app/generateUserToken',
         {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -100,8 +109,6 @@ const Streaming = () => {
       setCallId(roomId);
       setActiveScreen('call-screen');
     } catch (error) {
-      setCallId(roomId);
-      setActiveScreen('call-screen');
       console.error('Join Room Error:', error);
       Alert.alert(
         'Error',
@@ -110,7 +117,6 @@ const Streaming = () => {
     }
   };
 
-  // Fetch user details
   useEffect(() => {
     const getDetails = async () => {
       try {
@@ -123,7 +129,6 @@ const Streaming = () => {
     getDetails();
   }, []);
 
-  // Initialize Stream client
   useEffect(() => {
     if (userDetails) {
       const initializeClient = async () => {
@@ -136,18 +141,19 @@ const Streaming = () => {
               name: userDetails.name,
               image: photo,
             },
-            tokenProvider: () => Promise.resolve(token), // Ensure token is returned as a promise
+            tokenProvider: () => Promise.resolve(token),
           });
           setClient(streamClient);
         } else {
           console.error('Failed to initialize client: token is undefined.');
         }
+        console.log('token', token);
       };
       initializeClient();
     }
   }, [userDetails]);
 
-  if (!client) {
+  if (!client || roomsLoading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size={'large'} />
@@ -165,6 +171,14 @@ const Streaming = () => {
       ) : (
         <FlatList
           data={rooms}
+          ListEmptyComponent={
+            <View
+              style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+              <Text style={{color: 'red', fontSize: 25}}>
+                No Live Rooms Available!!
+              </Text>
+            </View>
+          }
           renderItem={({item}) => (
             <LiveRoomCard onJoin={() => joinRoom(item.code)} />
           )}

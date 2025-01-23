@@ -1,10 +1,14 @@
 // LiveRoomCard.js
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Text, Image, Button, StyleSheet} from 'react-native';
 import AppButton from '../Button';
 import LottieView from 'lottie-react-native';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext';
 
 const LiveRoomCard = ({onJoin}) => {
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
   return (
     <View style={styles.card}>
       <Image
@@ -19,8 +23,8 @@ const LiveRoomCard = ({onJoin}) => {
           justifyContent: 'space-between',
         }}>
         <View>
-          <Text style={styles.title}>Live Podcast</Text>
-          <Text style={styles.description}>Delnavaz Podcast..</Text>
+          <Text style={styles.title}>{t('LivePodcast')}</Text>
+          <Text style={styles.description}>{t('DelnavazPodcast')}</Text>
         </View>
         <LottieView
           source={require('../../assets/icons/livestreaming3.json')}
@@ -31,7 +35,7 @@ const LiveRoomCard = ({onJoin}) => {
       </View>
 
       <View style={{alignItems: 'center', paddingVertical: 2}}>
-        <AppButton text="Start Listening" onPress={onJoin} />
+        <AppButton text={t('StartListening')} onPress={onJoin} />
       </View>
     </View>
   );
@@ -64,6 +68,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     fontStyle: 'italic',
+    textAlign: 'left',
   },
 });
 

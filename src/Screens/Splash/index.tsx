@@ -150,5 +150,6 @@ const styles = StyleSheet.create({
     fontSize: ms(13),
     fontFamily: 'Gilroy-SemiBoldItalic',
     marginBottom: verticalScale(130),
+    lineHeight: 20,
   },
 });

@@ -1,6 +1,5 @@
-/* eslint-disable prettier/prettier */
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import AppInput from '../../components/AppInput';
 import AppButton from '../../components/Button';
 import {
@@ -11,12 +10,15 @@ import {
   vs,
 } from 'react-native-size-matters';
 import LeftArrow from '../../assets/icons/LeftArrow';
-import {login, newPodcast} from '../../api/auth';
+import {getProfile, login} from '../../api/auth';
 import LottieView from 'lottie-react-native';
 import {horizontalScale} from '../../utils/scaling.ts';
 import {Button, Dialog, Portal} from 'react-native-paper';
 import {setItem} from '../../api/localstorage';
 import {Pressable} from 'react-native-gesture-handler';
+import i18n from '../../../i18n.js';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext.js';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -24,6 +26,8 @@ const LoginScreen = ({navigation}) => {
   const [showLoader, setShowLoader] = useState(false);
   const [visible, setVisible] = React.useState(false);
   const [success, setSuccess] = useState('inputs');
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
 
   const submitClick = async () => {
     if (!email || !password) {
@@ -34,10 +38,11 @@ const LoginScreen = ({navigation}) => {
         setShowLoader(true);
         const res = await login(email, password);
         if (res?.status === 200) {
+          setItem('user', res.data.data);
           setItem('authenticate', res.data.data.token);
           setSuccess('200');
           setVisible(true);
-        } else if (res?.status === 401) {
+        } else {
           setSuccess('400');
           setVisible(true);
         }
@@ -48,18 +53,34 @@ const LoginScreen = ({navigation}) => {
   };
 
   const successClick = () => {
-    hideDialog();
-    navigation.replace('Add Profile');
+    profile();
+  };
+
+  const profile = async () => {
+    const response = await getProfile();
+    if (response?.data.data.name) {
+      navigation.replace('App');
+    } else {
+      navigation.replace('Add Profile');
+    }
   };
 
   const hideDialog = () => setVisible(false);
+
+  // Toggle function to switch language
+  const toggleLanguage = () => {
+    const newLanguage = i18n.language === 'en' ? 'fa' : 'en'; // Switching between en and fa
+    console.log(`Switching language to: ${newLanguage}`);
+    i18n.changeLanguage(newLanguage);
+  };
+
   return (
     <View style={styles.mainView}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()}>
           <LeftArrow />
         </Pressable>
-        <Text style={styles.headerText}>Welcome back, Login</Text>
+        <Text style={styles.headerText}>{t('loginHeader')}</Text>
       </View>
       <Portal>
         <Dialog
@@ -75,21 +96,20 @@ const LoginScreen = ({navigation}) => {
             }
             size={40}
           />
-          {/* <Dialog.Title style={styles.title}>Please fill all the fields</Dialog.Title> */}
           <Dialog.Content style={{alignItems: 'center'}}>
             {success === '400' ? (
               <>
                 <Text style={{color: 'red', fontSize: 18}}>
-                  Invalid credentials
+                  {t('Invalidcredentials')}
                 </Text>
-                <Text style={{color: 'red', fontSize: 18}}>Try Again!</Text>
+                <Text style={{color: 'red', fontSize: 18}}>
+                  {t('TryAgain')}
+                </Text>
               </>
             ) : success === 'inputs' ? (
-              <>
-                <Text style={{color: 'red', fontSize: 18}}>
-                  *Please fill all the fields
-                </Text>
-              </>
+              <Text style={{color: 'red', fontSize: 18}}>
+                {t('Pleasefill')}
+              </Text>
             ) : (
               success === '200' && (
                 <>
@@ -100,7 +120,7 @@ const LoginScreen = ({navigation}) => {
                     style={{width: 80, height: 80}}
                   />
                   <Text style={{color: '#5cb85c', fontSize: 20}}>
-                    Login Success
+                    {t('loginSuccess')}
                   </Text>
                 </>
               )
@@ -108,23 +128,24 @@ const LoginScreen = ({navigation}) => {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={success === '200' ? successClick : hideDialog}>
-              Ok
+              {t('Ok')}
             </Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
       <AppInput
-        label="Email"
+        label={t('email')}
         onChangeText={setEmail}
         value={email}
-        placeholder="Enter your email"
+        placeholder={t('enterEmail')}
       />
       <AppInput
-        secureTextEntry={true}
-        label="Password"
+        secureTextEntry
+        label={t('password')}
         onChangeText={setPassword}
         value={password}
-        placeholder="Enter your password"
+        placeholder={t('enterPass')}
       />
       <View style={{marginTop: vs(24), marginBottom: vs(10)}}>
         {showLoader ? (
@@ -144,19 +165,25 @@ const LoginScreen = ({navigation}) => {
         ) : (
           <AppButton
             onPress={submitClick}
-            text="Next"
+            text={t('next')}
             backgroundColor="#463730"
           />
         )}
       </View>
 
-      <View style={styles.bottomView}>
+      <View style={{alignItems: 'center', flex: 1, marginVertical: vs(15)}}>
         <Text
-          style={styles.haveAnAccount}
-          onPress={() => navigation.navigate('Signup')}>
-          Don’t have an account? Signup
+          onPress={() => navigation.navigate('Signup')}
+          style={styles.alreadyText}>
+          {t('dontAccount')}
         </Text>
       </View>
+      <TouchableOpacity
+        onPress={() => setLanguage(language === 'en' ? 'fa' : 'en')}>
+        <Text style={{color: '#345eeb', fontSize: 18}}>
+          {i18n.language === 'en' ? 'Farsi-Version' : 'English-Version'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -171,25 +198,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(15),
     marginVertical: 10,
   },
-  orContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-    marginVertical: vs(10),
-  },
-  haveAnAccount: {
+  alreadyText: {
     marginTop: 'auto',
     fontFamily: 'Inter-Regular',
     fontSize: ms(15),
     color: '#101010',
-  },
-  bottomView: {alignItems: 'center', flex: 1, marginVertical: vs(20)},
-  line: {
-    borderColor: '#D9D9D9',
-    borderWidth: 0.8,
-    width: 150,
-    height: vs(1),
   },
   header: {
     alignSelf: 'flex-start',
@@ -204,10 +217,28 @@ const styles = StyleSheet.create({
     color: '#251605',
   },
   button: {
-    height: verticalScale(48),
+    height: verticalScale(50),
     borderRadius: moderateScale(8),
     alignItems: 'center',
     justifyContent: 'center',
-    width: horizontalScale(345),
+    width: horizontalScale(320),
+  },
+  bottomView: {
+    alignItems: 'center',
+    flex: 1,
+    marginVertical: vs(20),
+  },
+  haveAnAccount: {
+    fontFamily: 'Inter-Regular',
+    fontSize: ms(15),
+    color: '#101010',
+  },
+  languageToggle: {
+    marginTop: 15,
+  },
+  languageToggleText: {
+    fontSize: ms(15),
+    color: '#1E90FF',
+    textDecorationLine: 'underline',
   },
 });

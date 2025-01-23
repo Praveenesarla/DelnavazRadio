@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-// NotificationContext.js
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import {getItem, setItem} from '../api/localstorage.ts';
 

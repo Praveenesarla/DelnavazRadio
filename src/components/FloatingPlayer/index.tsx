@@ -71,7 +71,11 @@ const FloatingPlayer = () => {
         style={styles.container}
         activeOpacity={0.85}
         onPress={() => navigation.navigate('player')}>
-        <Image source={{uri: activeTrack?.artwork}} style={styles.coverImage} />
+        <Image
+          source={{uri: activeTrack?.artwork}}
+          style={styles.coverImage}
+          alt="artwork"
+        />
         <View style={styles.titleContainer}>
           <MovingText
             text={activeTrack?.title}
@@ -84,19 +88,19 @@ const FloatingPlayer = () => {
           <AntDesign
             name="stepbackward"
             size={35}
-            color={'black'}
+            color={'#463730'}
             onPress={() => TrackPlayer.skipToPrevious()}
           />
           <Ionicons
             name={playing ? 'pause' : 'play'}
             size={35}
-            color={'black'}
+            color={'#463730'}
             onPress={playing ? pauseButton : playButton}
           />
           <AntDesign
             name="stepforward"
             size={35}
-            color={'black'}
+            color={'#463730'}
             onPress={() => TrackPlayer.skipToNext()}
           />
         </View>

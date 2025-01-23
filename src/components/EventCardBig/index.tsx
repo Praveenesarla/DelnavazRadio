@@ -1,9 +1,13 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {ms, s, vs} from 'react-native-size-matters';
 import RightArrow from '../../assets/icons/RightArrow';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext';
 
 const EventCardBig = () => {
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
   return (
     <View
       style={{
@@ -25,7 +29,7 @@ const EventCardBig = () => {
             fontSize: ms(16),
             color: '#FFB800',
           }}>
-          Cultural and Educational Conference
+          {t('CulturalEducationaConference')}
         </Text>
         <Text
           style={{
@@ -33,7 +37,7 @@ const EventCardBig = () => {
             fontFamily: 'Inter-SemiBold',
             fontSize: ms(20),
           }}>
-          Educational Seminar – Celebration of Rumi
+          {t('EducationalSeminarCelebration')}
         </Text>
         <Text
           style={{
@@ -41,17 +45,16 @@ const EventCardBig = () => {
             fontFamily: 'Inter-Regular',
             fontSize: ms(12),
           }}>
-          June 5, 2024
+          {t('June52024')}
         </Text>
         <Text
+          numberOfLines={6}
           style={{
             fontFamily: 'Inter-Regular',
             fontSize: ms(16),
             color: '#424242',
           }}>
-          Cultural and educational conference Delnavaz Non-Profit Foundation
-          Location: Irvine, California Everyone is aware that in the Western
-          world, particularly after the publication of…
+          {t('eventCardLine')}
         </Text>
         <View
           style={{
@@ -67,7 +70,7 @@ const EventCardBig = () => {
               fontFamily: 'Inter-Medium',
               fontSize: ms(12),
             }}>
-            READ MORE
+            {t('READMORE')}
           </Text>
           <RightArrow />
         </View>

@@ -1,44 +1,26 @@
 {
   "project_info": {
-    "project_number": "383878382444",
-    "project_id": "delnavaz-e3fda",
-    "storage_bucket": "delnavaz-e3fda.firebasestorage.app"
+    "project_number": "515776374304",
+    "project_id": "delnavazradio-4fa68",
+    "storage_bucket": "delnavazradio-4fa68.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:383878382444:android:6a2fe5ed1825d0d92ae949",
+        "mobilesdk_app_id": "1:515776374304:android:822d9adf5f25497ac87e45",
         "android_client_info": {
           "package_name": "com.delnavazradio"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "383878382444-rjm0qetbd6r65csn6h9lr2fjl5r3bl30.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.delnavazradio",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "383878382444-g0ua4lmml9cvv1f27dn6cl7g5oultrmb.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAsIrrV5hyU5cf7o1Q0TFSVTSRCYUd2BAI"
+          "current_key": "AIzaSyCr2ZXIibFrmxIJiINmTwvXoinJcXdJlfo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "383878382444-g0ua4lmml9cvv1f27dn6cl7g5oultrmb.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

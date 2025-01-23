@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import {APIClient, AuthAPIClient, AuthAPIClient2} from '../axios.config';
+import {AuthAPIClient, AuthAPIClient2} from '../axios.config';
 
 // AUTH RELATED END-POINTS
 
@@ -101,7 +100,6 @@ export const getProfile = async () => {
     const response = await AuthAPIClient2.get('/me');
     console.log('ress', response);
     return response;
-    
   } catch (error) {
     console.log(error);
   }
@@ -118,5 +116,20 @@ export const addProfile = async (phone: string, name: string) => {
   } catch (e: any) {
     console.log('api', e);
     return e;
+  }
+};
+
+export const deleteAccount = async (id: string, email: string) => {
+  try {
+    const response = await AuthAPIClient2.delete('/delete', {
+      data: {
+        id: id,
+        email: email,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting account:', error);
+    throw error;
   }
 };

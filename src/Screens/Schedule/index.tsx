@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useContext} from 'react';
 import {
   StyleSheet,
   Dimensions,
@@ -16,12 +16,16 @@ import Swiper from 'react-native-swiper';
 import ScheduleCard from '../../components/ScheduleCard';
 import schedule from '../../data/data.ts';
 import {ms} from 'react-native-size-matters';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext.js';
 
 const {width} = Dimensions.get('window');
 
 export default function Example() {
   const swiper = useRef();
 
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
   const initialDate = new Date();
   const initialWeekday = moment(initialDate).format('ddd');
 
@@ -86,7 +90,7 @@ export default function Example() {
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Your Schedule</Text>
+          <Text style={styles.title}>{t('Schedule')}</Text>
         </View>
 
         <View style={styles.picker}>
@@ -164,6 +168,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1d1d1d',
     marginBottom: ms(12),
+    textAlign: 'left',
   },
   picker: {
     maxHeight: ms(74), // Set a maximum height for the picker

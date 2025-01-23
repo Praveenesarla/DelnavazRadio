@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, {useContext} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 
 import {useCall} from '@stream-io/video-react-native-sdk';
@@ -9,10 +9,15 @@ import {AudioRoomControlsPanel} from '../../components/AudioRoom/AudioRoomContro
 import {PermissionRequestsPanel} from '../../components/AudioRoom/PermissionsRequestsPanel';
 import AppButton from '../../components/Button';
 import LottieView from 'lottie-react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useTranslation} from 'react-i18next';
+import LanguageContext from '../../utils/LanguageContext';
 
 type Props = {goToHomeScreen: () => void};
 
 export const AudioRoomUI = ({goToHomeScreen}: Props) => {
+  const {t} = useTranslation();
+  const {language, setLanguage} = useContext(LanguageContext);
   const call = useCall();
   const leaveCall = async () => {
     // This will leave the call and stop sending and receiving audio.
@@ -29,7 +34,7 @@ export const AudioRoomUI = ({goToHomeScreen}: Props) => {
             textDecorationStyle: 'solid',
             textDecorationLine: 'underline',
           }}>
-          Delnavaz AudioRoom
+          {t('DelnavazAudioRoom')}
         </Text>
         <LottieView
           autoPlay
@@ -39,16 +44,18 @@ export const AudioRoomUI = ({goToHomeScreen}: Props) => {
         />
       </View>
 
-      <LottieView
+      {/* <LottieView
         source={require('../../assets/icons/audio.json')}
         style={{width: '100%', height: 200}}
         autoPlay
         loop
         hardwareAccelerationAndroid
-      />
+      /> */}
+
+      <Icon name="mic" size={200} color="#463730" />
 
       <View style={{alignItems: 'center'}}>
-        <AppButton text="Leave Audio Room" onPress={leaveCall} />
+        <AppButton text={t('LeaveAudioRoom')} onPress={leaveCall} />
       </View>
     </View>
   );

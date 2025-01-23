@@ -23,7 +23,12 @@ const GetStarted = ({navigation}) => {
       <Text style={styles.punchLine}>
         The Future Belongs to the Nation of the Past Know Yourself Well.
       </Text>
-      <View style={{marginTop: 'auto', marginVertical: vs(15)}}>
+      <View
+        style={{
+          marginTop: 'auto',
+          marginVertical: vs(15),
+          alignItems: 'center',
+        }}>
         <AppButton
           onPress={() => {
             console.log('seting');
