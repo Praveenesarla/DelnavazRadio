@@ -1,3 +1,3 @@
-import {API_URL, API_KEY} from '@env';
+import {API_URL, API_GETSTREAM_KEY} from '@env';
 
-export default {API_KEY, API_URL};
+export default {API_GETSTREAM_KEY, API_URL};

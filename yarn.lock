@@ -7572,6 +7572,11 @@ react-native-incall-manager@^4.2.0:
   resolved "https://registry.npmjs.org/react-native-incall-manager/-/react-native-incall-manager-4.2.0.tgz"
   integrity sha512-DC5XRQVAwNgNA6YZ3ILF6ttWXv/MUQ4omzmVDh/uHc0TW0v4f8QIdt6D9GHZhGKb3+qB7XKUxpXVBrLH+9zqfQ==
 
+react-native-keychain@^9.2.2:
+  version "9.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-9.2.2.tgz#45449fadfbe96b35a2e1470f8a9c40a0c22edbe5"
+  integrity sha512-sATwVC76fEl4fsdBsgzG6lwhUhKduK0yqPBKHQRrJlv/2/HFBLXc4yLk9SKnZdgVHCpBxIEX4obMyMcu3HBh9w==
+
 react-native-linear-gradient@^2.8.3:
   version "2.8.3"
   resolved "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.8.3.tgz"

@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {ms, s, vs} from 'react-native-size-matters';
 import ProfileOption from '../../components/ProfileOption';
 import {getProfile} from '../../api/auth';
+import {Skeleton} from 'native-base'; // Import Skeleton from native-base
 
 const Profile = ({navigation}) => {
   const [name, setName] = useState('');
@@ -32,8 +33,11 @@ const Profile = ({navigation}) => {
   return (
     <ScrollView style={styles.mainContainer}>
       <View style={styles.firstPart}>
+        {/* Skeleton Loader for Profile Picture */}
         <View style={styles.profilePic}>
-          {name && (
+          {!name ? (
+            <Skeleton size="lg" rounded="full" startColor={'coolGray.300'} />
+          ) : (
             <Text
               style={{
                 color: '#FFF',
@@ -44,17 +48,45 @@ const Profile = ({navigation}) => {
             </Text>
           )}
         </View>
-        {name && <Text style={styles.profileName}>{name}</Text>}
+
+        {/* Skeleton Loader for Profile Name */}
+        {!name ? (
+          <Skeleton.Text lines={1} startColor={'coolGray.300'} />
+        ) : (
+          <Text style={styles.profileName}>{name}</Text>
+        )}
       </View>
+
+      {/* Profile Menu Container */}
       <View style={styles.profileMenuContainer}>
-        <FlatList
-          scrollEnabled={false}
-          data={profileData}
-          renderItem={({item}) => (
-            <ProfileOption item={item} navigation={navigation} />
-          )}
-          keyExtractor={item => item.id.toString()} // Add keyExtractor
-        />
+        {/* Skeleton Loader for Profile Menu Items */}
+        {!profileData ? (
+          <FlatList
+            scrollEnabled={false}
+            data={[1, 2, 3, 4, 5]} // Fake data to show skeleton loader for menu items
+            renderItem={() => (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  padding: 15,
+                }}>
+                <Skeleton.Text lines={1} w="60%" startColor={'coolGray.300'} />
+                <Skeleton size="4" rounded="full" startColor={'coolGray.300'} />
+              </View>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <FlatList
+            scrollEnabled={false}
+            data={profileData}
+            renderItem={({item}) => (
+              <ProfileOption item={item} navigation={navigation} />
+            )}
+            keyExtractor={item => item.id.toString()}
+          />
+        )}
       </View>
     </ScrollView>
   );

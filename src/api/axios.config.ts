@@ -1,21 +1,19 @@
-/* eslint-disable prettier/prettier */
 import axios from 'axios';
 import {getToken} from './localstorage';
 
-const BASE_URL =
-  process.env.NODE_ENV === 'prod'
-    ? process.env.REACT_APP_PROD_BASE_URL
-    : process.env.REACT_APP_LOCAL_BASE_URl;
+const BASE_URL = process.env.PROD_URL;
+
+console.log('prod url', BASE_URL);
 
 export const APIClient = axios.create({
-  baseURL: 'https://podcast-backend-snowy.vercel.app/api/v1/auth/user',
+  baseURL: `${BASE_URL}/api/v1/auth/user`,
   headers: {'Content-Type': 'application/json', 'Accept-Encoding': 'gzip'},
 });
 
 // FOR AUTHENTICATED ROUTES
 // TOKEN TO BE EXTRACTED FROM STORE
 const AuthAPIClient = axios.create({
-  baseURL: 'https://podcast-backend-snowy.vercel.app/api/v1',
+  baseURL: `${BASE_URL}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
     'Accept-Encoding': 'gzip',
@@ -38,7 +36,7 @@ AuthAPIClient.interceptors.request.use(
 );
 
 const AuthAPIClient2 = axios.create({
-  baseURL: 'https://podcast-backend-snowy.vercel.app/api/v1/auth/user',
+  baseURL: `${BASE_URL}/api/v1/auth/user`,
   headers: {
     'Content-Type': 'application/json',
     'Accept-Encoding': 'gzip',

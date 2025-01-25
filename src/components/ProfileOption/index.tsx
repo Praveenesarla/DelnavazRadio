@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import React, {useContext} from 'react';
 import ProfileArrow from '../../assets/icons/ProfileArrow';

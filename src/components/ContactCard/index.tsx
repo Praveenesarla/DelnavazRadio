@@ -1,12 +1,11 @@
+import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
-import React, {useContext} from 'react';
+
 import {ms, s, vs} from 'react-native-size-matters';
 import {useTranslation} from 'react-i18next';
-import LanguageContext from '../../utils/LanguageContext';
 
 const ContactCard = () => {
   const {t} = useTranslation();
-  const {language, setLanguage} = useContext(LanguageContext);
   return (
     <View style={styles.mainContainer}>
       <View style={styles.logoAndCompany}>

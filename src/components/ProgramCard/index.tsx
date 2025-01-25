@@ -69,5 +69,5 @@ const styles = StyleSheet.create({
   },
   content: {padding: 14, gap: 8},
   authorContainer: {flexDirection: 'row', alignItems: 'center', gap: 5},
-  authorImage: {width: s(28), height: vs(28), borderRadius: ms(14)},
+  authorImage: {width: 28, height: 28, borderRadius: ms(14)},
 });

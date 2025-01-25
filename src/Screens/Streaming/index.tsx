@@ -27,9 +27,9 @@ const Streaming = () => {
   const photo = null;
 
   console.log('url', process.env.API_URL);
-  console.log('apikey', enVariables.API_KEY);
+  console.log('apikey', enVariables.API_GETSTREAM_KEY);
 
-  const apiKey = '7fgb6ywjyxhk';
+  const apiKey = enVariables.API_GETSTREAM_KEY;
 
   useEffect(() => {
     const fetchRooms = async () => {
