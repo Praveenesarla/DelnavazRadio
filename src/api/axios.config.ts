@@ -37,6 +37,7 @@ AuthAPIClient.interceptors.request.use(
 
 const AuthAPIClient2 = axios.create({
   baseURL: `${BASE_URL}/api/v1/auth/user`,
+  baseURL: `${BASE_URL}/api/v1/auth/user`,
   headers: {
     'Content-Type': 'application/json',
     'Accept-Encoding': 'gzip',
