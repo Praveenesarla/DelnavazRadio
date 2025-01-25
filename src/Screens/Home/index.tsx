@@ -1,18 +1,14 @@
-/* eslint-disable prettier/prettier */
 import {
   Alert,
   FlatList,
-  Image,
   ScrollView,
   StyleSheet,
   Switch,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
-import AppInput from '../../components/AppInput';
 import EventCard from '../../components/EventCard';
 import ScholarCard from '../../components/ScholarCard';
 import TopPodcastCard from '../../components/TopPodcastCard';
@@ -23,12 +19,9 @@ import {ms, s, vs} from 'react-native-size-matters';
 import ProgramCard from '../../components/ProgramCard';
 import CardHeader from '../../components/CardHeader';
 import FloatingPlayer from '../../components/FloatingPlayer';
-import {recomendedSongs} from '../../data/songs';
-import {isTabletMode} from 'react-native-device-info';
 import TrackPlayer, {AddTrack, useActiveTrack} from 'react-native-track-player';
 import {getAllPodcast, getCategory} from '../../api/auth';
 import Icon from 'react-native-vector-icons/Octicons';
-import {getItem, getToken, setItem} from '../../api/localstorage';
 import {useNotifications} from '../../utils/NotificationContext';
 import {Skeleton} from 'native-base';
 import LanguageContext from '../../utils/LanguageContext';
