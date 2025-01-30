@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from '../Screens/Home';
@@ -11,6 +9,7 @@ import {vs} from 'react-native-size-matters';
 import {NavigationContainer} from '@react-navigation/native';
 import ScheduleScreen from '../Screens/Schedule';
 import Icon from 'react-native-vector-icons/Ionicons';
+import SearchScreen from '../Screens/SearchScren';
 
 const AppTab = createBottomTabNavigator();
 
@@ -18,6 +17,7 @@ const AppNavigator = () => {
   return (
     <AppTab.Navigator
       screenOptions={({route}) => ({
+        // eslint-disable-next-line react/no-unstable-nested-components
         tabBarIcon: ({focused}) => {
           let iconName;
 

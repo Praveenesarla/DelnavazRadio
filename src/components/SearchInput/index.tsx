@@ -1,17 +1,26 @@
-/* eslint-disable prettier/prettier */
 import React from 'react';
-import {View, TextInput, StyleSheet, Image} from 'react-native';
+import {View, TextInput, StyleSheet, Image, TextInputProps} from 'react-native';
 import {ms, s, vs} from 'react-native-size-matters';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const SearchInput = ({placeholder = 'Search Podcast', onChangeText}) => {
+// Define the type for the component props
+type SearchInputProps = TextInputProps & {
+  placeholder?: string; // Optional placeholder, defaults to 'Search Podcast'
+  onChangeText: (text: string) => void; // Function to handle text changes
+};
+
+const SearchInput: React.FC<SearchInputProps> = ({
+  placeholder = 'Search Podcast',
+  onChangeText,
+  ...props
+}) => {
   return (
     <View style={styles.container}>
       <Image
         source={require('../../assets/icons/Magnifer.png')}
-        style={{width: s(20), height: vs(20)}}
+        style={styles.icon}
       />
       <TextInput
+        {...props}
         style={styles.input}
         placeholder={placeholder}
         onChangeText={onChangeText}
@@ -27,20 +36,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: '#ccc',
     borderRadius: ms(28),
-    paddingHorizontal: 10,
+    paddingHorizontal: s(10),
     width: s(315),
     height: vs(50),
     backgroundColor: '#FFFFFF',
-    padding: 5,
   },
   input: {
     flex: 1,
-    height: 40,
-    paddingLeft: 10,
+    height: vs(40),
+    paddingLeft: s(10),
     textAlign: 'left',
   },
   icon: {
-    marginRight: 10,
+    width: s(20),
+    height: vs(20),
+    marginRight: s(8),
   },
 });
 

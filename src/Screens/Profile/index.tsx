@@ -42,7 +42,7 @@ const Profile = ({navigation}) => {
               style={{
                 color: '#FFF',
                 fontFamily: 'Gilroy-Medium',
-                fontSize: 25,
+                fontSize: 35,
               }}>
               {name[0]?.toUpperCase()}
             </Text>
@@ -51,7 +51,11 @@ const Profile = ({navigation}) => {
 
         {/* Skeleton Loader for Profile Name */}
         {!name ? (
-          <Skeleton.Text lines={1} startColor={'coolGray.300'} />
+          <Skeleton.Text
+            lines={1}
+            startColor={'coolGray.300'}
+            marginTop={'10'}
+          />
         ) : (
           <Text style={styles.profileName}>{name}</Text>
         )}
@@ -114,8 +118,9 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontFamily: 'Inter-Medium',
-    fontSize: ms(20),
+    fontSize: ms(25),
     color: '#FFFFFF',
+    marginTop: 10,
   },
   profileMenuContainer: {
     backgroundColor: '#ffffff',

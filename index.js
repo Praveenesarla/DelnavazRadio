@@ -8,9 +8,6 @@ import {NotificationProvider} from './src/utils/NotificationContext';
 import {LanguageProvider} from './src/utils/LanguageContext'; // Import LanguageProvider
 
 // Handle background messages
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('Message handled in the background!', remoteMessage);
-});
 
 // Wrap App with both NotificationProvider and LanguageProvider
 const Root = () => (

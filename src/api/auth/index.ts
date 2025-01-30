@@ -133,3 +133,12 @@ export const deleteAccount = async (id: string, email: string) => {
     throw error;
   }
 };
+
+export const searchPodcast = async (key: string) => {
+  try {
+    const response = await AuthAPIClient.get(`/podcast/search/${key}`);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};

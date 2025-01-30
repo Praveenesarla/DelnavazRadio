@@ -13,92 +13,112 @@ import notifee, {
 import {useNotifications} from './src/utils/NotificationContext';
 import {useSetupPlayer} from './src/hooks/useSetupPlayer';
 import {NativeBaseProvider} from 'native-base';
-import LanguageContext, {LanguageProvider} from './src/utils/LanguageContext';
+import {LanguageProvider} from './src/utils/LanguageContext';
 
 const App = () => {
   const {notifications} = useNotifications();
 
   useEffect(() => {
-    let unsubscribeOnMessage = null;
-    let unsubscribeBackgroundEvent = null;
-
-    const setupNotifications = async () => {
-      console.log('Setting up notifications...');
-
-      // Request permissions
+    async function requestUserPermission() {
       const settings = await notifee.requestPermission();
-      if (settings.authorizationStatus < AuthorizationStatus.AUTHORIZED) {
-        console.log('User declined notification permissions');
-        return;
+
+      if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
+        console.log('Permission settings:', settings);
+      } else {
+        console.log('User declined permissions');
       }
+    }
 
-      // Subscribe to topic
-      await messaging().subscribeToTopic('all_users');
-      console.log('Subscribed to topic: all_users');
+    requestUserPermission();
 
-      // Create Android notification channel
+    const subscribeToTopic = async () => {
+      try {
+        await messaging().subscribeToTopic('all_users');
+        console.log('Subscribed to the topic : all_users');
+      } catch (error) {
+        console.log('Subscribed to topic failed', error);
+      }
+    };
+    subscribeToTopic();
+
+    // Create a notification channel for Android
+    const createNotificationChannel = async () => {
       await notifee.createChannel({
         id: 'default',
         name: 'Default Channel',
         importance: AndroidImportance.HIGH,
         sound: 'default',
       });
+    };
 
-      // Foreground message listener
-      unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
-        if (notifications) {
-          console.log('Foreground notification received:', remoteMessage);
+    createNotificationChannel();
 
-          await notifee.displayNotification({
-            title: 'Live has been Started!!',
-            body: 'Join the Live Now',
-            android: {
-              channelId: 'default',
-              importance: AndroidImportance.HIGH,
-              smallIcon: 'ic_launcher',
-              pressAction: {id: 'default'},
-              largeIcon: require('./src/assets/icons/largeicon.png'),
-            },
-          });
+    // Foreground handler
+    const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+      console.log('Notification foreground received', remoteMessage);
+      const imageUrl = remoteMessage.notification?.android?.imageUrl;
+
+      await notifee.displayNotification({
+        title: 'Live has Started',
+        body: 'Join the Live Now!',
+        android: {
+          channelId: 'default',
+          largeIcon: require('./src/assets/icons/largeicon.png'),
+          importance: AndroidImportance.HIGH,
+          smallIcon: 'ic_small',
+          pressAction: {id: 'default'},
+          // style: imageUrl
+          //   ? {type: AndroidStyle.BIGPICTURE, picture: imageUrl}
+          //   : undefined,
+        },
+      });
+    });
+
+    // Background handler (using Firebase)
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Notification background received', remoteMessage);
+      const imageUrl = remoteMessage.notification?.android?.imageUrl;
+
+      await notifee.displayNotification({
+        title: 'Live has Started',
+        body: 'Join the Live Now!',
+        android: {
+          largeIcon: require('./src/assets/icons/largeicon.png'),
+          channelId: 'default',
+          importance: AndroidImportance.HIGH,
+          smallIcon: 'ic_small',
+          pressAction: {id: 'default'},
+          // style: imageUrl
+          //   ? {type: AndroidStyle.BIGPICTURE, picture: imageUrl}
+          //   : undefined,
+        },
+      });
+    });
+
+    // Handle notification when app is opened from a background state
+    const unsubscribeOnNotificationOpenedApp =
+      messaging().onNotificationOpenedApp(remoteMessage => {
+        console.log('Notification opened from background state', remoteMessage);
+      });
+
+    // Handle notification when the app is terminated
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'Notification opened from terminated state',
+            remoteMessage,
+          );
         }
       });
 
-      // Notifee background events
-      unsubscribeBackgroundEvent = notifee.onBackgroundEvent(
-        async ({type, detail}) => {
-          if (type === EventType.PRESS) {
-            console.log(
-              'Notification pressed in background:',
-              detail.notification,
-            );
-          }
-        },
-      );
-    };
-
-    if (notifications) {
-      setupNotifications();
-    } else {
-      console.log('Notifications are disabled. Cleaning up...');
-      if (unsubscribeOnMessage) unsubscribeOnMessage();
-      if (unsubscribeBackgroundEvent) unsubscribeBackgroundEvent();
-
-      // Unsubscribe from topics
-      messaging()
-        .unsubscribeFromTopic('all_users')
-        .then(() => console.log('Unsubscribed from topic: all_users'))
-        .catch(error =>
-          console.error('Failed to unsubscribe from topic:', error),
-        );
-    }
-
+    // Clean up the subscriptions
     return () => {
-      if (unsubscribeOnMessage) unsubscribeOnMessage();
-      if (unsubscribeBackgroundEvent) unsubscribeBackgroundEvent();
-      console.log('Notification handlers cleaned up');
+      unsubscribeOnMessage();
+      unsubscribeOnNotificationOpenedApp();
     };
-  }, [notifications]);
-
+  }, []);
   useSetupPlayer();
 
   return (
@@ -113,34 +133,6 @@ const App = () => {
     </LanguageProvider>
   );
 };
-
-// Global background message handler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-  const {notifications} = useNotifications(); // Access `notifications` value dynamically
-  if (notifications) {
-    console.log('Global background message received:', remoteMessage);
-
-    await notifee.displayNotification({
-      title: 'Live has been Started!!',
-      body: 'Join the Live Now',
-      android: {
-        channelId: 'default',
-        importance: AndroidImportance.HIGH,
-        smallIcon: 'ic_launcher',
-        // style: remoteMessage.notification?.android?.imageUrl
-        //   ? {
-        //       type: AndroidStyle.BIGPICTURE,
-        //       picture: remoteMessage.notification?.android?.imageUrl,
-        //     }
-        //   : undefined,
-        largeIcon: require('./src/assets/icons/largeicon.png'),
-        pressAction: {id: 'default'},
-      },
-    });
-  } else {
-    console.log('Notifications are disabled, skipping background handling.');
-  }
-});
 
 export default App;
 

@@ -20,7 +20,7 @@ import ProgramCard from '../../components/ProgramCard';
 import CardHeader from '../../components/CardHeader';
 import FloatingPlayer from '../../components/FloatingPlayer';
 import TrackPlayer, {AddTrack, useActiveTrack} from 'react-native-track-player';
-import {getAllPodcast, getCategory} from '../../api/auth';
+import {getAllPodcast, getCategory, searchPodcast} from '../../api/auth';
 import Icon from 'react-native-vector-icons/Octicons';
 import {useNotifications} from '../../utils/NotificationContext';
 import {Skeleton} from 'native-base';
@@ -29,8 +29,9 @@ import {useTranslation} from 'react-i18next';
 
 const HomeScreen = ({navigation}) => {
   const [podcasts, setPodcasts] = useState<object[] | null>(null);
+  const [searchList, setSearchList] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
-
+  const [keyword, setKeyWord] = useState('');
   const [Interviews, setInterviews] = useState(null);
   const {t} = useTranslation();
   const {language, setLanguage} = useContext(LanguageContext);
@@ -63,11 +64,21 @@ const HomeScreen = ({navigation}) => {
   };
 
   useEffect(() => {
+    podcastList();
+  }, []);
+
+  useEffect(() => {
     allSongs();
     getInterview();
     getChildren();
     getEnglish();
   }, []);
+
+  const podcastList = async () => {
+    const response = await searchPodcast('my');
+    console.log('seach', response?.data?.data);
+    setSearchList(response?.data?.data);
+  };
 
   const getInterview = async () => {
     try {
@@ -317,7 +328,9 @@ const HomeScreen = ({navigation}) => {
               </View>
               <Text style={styles.headerTitle}>{t('whatToday')}</Text>
               <SearchInput
-                onChangeText={() => {}}
+                keyboardType="web-search"
+                onChangeText={keyword}
+                onFocus={() => navigation.navigate('Search')} // Navigate to the Search screen on focus
                 placeholder={t('searchPodcast')}
               />
             </View>

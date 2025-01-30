@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {
@@ -49,6 +48,14 @@ const FloatingPlayer = () => {
     <View>
       <View style={{zIndex: 1}}>
         <Slider
+          theme={{
+            disableMinTrackTintColor: '#fff',
+            maximumTrackTintColor: '#fff',
+            minimumTrackTintColor: '#251605',
+            cacheTrackTintColor: '#333',
+            bubbleBackgroundColor: '#666',
+            heartbeatColor: '#999',
+          }}
           style={styles.container}
           progress={progress}
           minimumValue={min}

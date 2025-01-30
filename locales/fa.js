@@ -16,6 +16,7 @@ export default {
     password: 'رمز عبور',
     next: 'بعدی',
     Invalidcredentials: 'اعتبارات نامعتبر',
+    UserNotFound: 'کاربر پیدا نشد. لطفاً ثبت نام کنید.',
     loginSuccess: 'ورود با موفقیت انجام شد',
     PleaseLogIn: 'لطفاً وارد شوید',
     Password8characters: 'رمز عبور باید حداقل ۸ کاراکتر باشد',

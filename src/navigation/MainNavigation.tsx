@@ -16,6 +16,7 @@ import HelpAndSupport from '../Screens/HelpAndSupport';
 import ProgramContent from '../Screens/ProgramContent';
 import PlayerScreen from '../Screens/PlayerScreen';
 import {useTranslation} from 'react-i18next';
+import SearchScreen from '../Screens/SearchScren';
 
 const Stack = createStackNavigator();
 
@@ -69,6 +70,11 @@ const MainNavigation = () => {
           name="NonProfit"
           component={NonProfit}
           options={{title: t('NonProfit')}}
+        />
+        <Stack.Screen
+          name="Search"
+          component={SearchScreen}
+          options={{headerShown: false}}
         />
         <Stack.Screen
           name="PressAndEvents"

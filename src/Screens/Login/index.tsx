@@ -24,7 +24,7 @@ const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showLoader, setShowLoader] = useState(false);
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
   const [success, setSuccess] = useState('inputs');
   const {t} = useTranslation();
   const {language, setLanguage} = useContext(LanguageContext);
@@ -40,10 +40,16 @@ const LoginScreen = ({navigation}) => {
         if (res?.status === 200) {
           setItem('user', res.data.data);
           setItem('authenticate', res.data.data.token);
-          setSuccess('200');
+          setSuccess('200'); // Login Success
+          setVisible(true);
+        } else if (res?.status === 401) {
+          setSuccess('401'); // Invalid Credentials
+          setVisible(true);
+        } else if (res?.status === 404) {
+          setSuccess('404'); // User Not Found
           setVisible(true);
         } else {
-          setSuccess('400');
+          setSuccess('unknown'); // Fallback case
           setVisible(true);
         }
       } finally {
@@ -67,9 +73,8 @@ const LoginScreen = ({navigation}) => {
 
   const hideDialog = () => setVisible(false);
 
-  // Toggle function to switch language
   const toggleLanguage = () => {
-    const newLanguage = i18n.language === 'en' ? 'fa' : 'en'; // Switching between en and fa
+    const newLanguage = i18n.language === 'en' ? 'fa' : 'en';
     console.log(`Switching language to: ${newLanguage}`);
     i18n.changeLanguage(newLanguage);
   };
@@ -88,42 +93,47 @@ const LoginScreen = ({navigation}) => {
           onDismiss={hideDialog}
           style={{gap: 5}}
           dismissable={false}>
-          <Dialog.Icon
-            icon={
-              success === '400'
-                ? 'exclamation-thick'
-                : success === 'inputs' && 'alert'
-            }
-            size={40}
-          />
+          {success !== '200' && (
+            <Dialog.Icon
+              icon={
+                success === '401' || success === '404'
+                  ? 'alert-circle'
+                  : success === 'inputs'
+                  ? 'alert'
+                  : 'check-circle'
+              }
+              size={40}
+            />
+          )}
           <Dialog.Content style={{alignItems: 'center'}}>
-            {success === '400' ? (
-              <>
-                <Text style={{color: 'red', fontSize: 18}}>
-                  {t('Invalidcredentials')}
-                </Text>
-                <Text style={{color: 'red', fontSize: 18}}>
-                  {t('TryAgain')}
-                </Text>
-              </>
+            {success === '401' ? (
+              <Text style={{color: 'red', fontSize: 18}}>
+                {t('Invalidcredentials')}
+              </Text>
+            ) : success === '404' ? (
+              <Text style={{color: 'red', fontSize: 18}}>
+                {t('UserNotFound')}
+              </Text>
             ) : success === 'inputs' ? (
               <Text style={{color: 'red', fontSize: 18}}>
                 {t('Pleasefill')}
               </Text>
+            ) : success === '200' ? (
+              <>
+                <LottieView
+                  source={require('../../assets/icons/accountVerified.json')}
+                  autoPlay
+                  loop
+                  style={{width: 80, height: 80}}
+                />
+                <Text style={{color: '#5cb85c', fontSize: 20}}>
+                  {t('loginSuccess')}
+                </Text>
+              </>
             ) : (
-              success === '200' && (
-                <>
-                  <LottieView
-                    source={require('../../assets/icons/accountVerified.json')}
-                    autoPlay
-                    loop
-                    style={{width: 80, height: 80}}
-                  />
-                  <Text style={{color: '#5cb85c', fontSize: 20}}>
-                    {t('loginSuccess')}
-                  </Text>
-                </>
-              )
+              <Text style={{color: 'orange', fontSize: 18}}>
+                {t('TryAgain')}
+              </Text>
             )}
           </Dialog.Content>
           <Dialog.Actions>
@@ -227,11 +237,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     marginVertical: vs(20),
-  },
-  haveAnAccount: {
-    fontFamily: 'Inter-Regular',
-    fontSize: ms(15),
-    color: '#101010',
   },
   languageToggle: {
     marginTop: 15,

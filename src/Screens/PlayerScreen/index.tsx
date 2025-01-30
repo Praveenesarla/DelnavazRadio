@@ -1,13 +1,13 @@
-/* eslint-disable prettier/prettier */
 import {
   ActivityIndicator,
   Image,
+  ImageBackground,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {startTransition, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {colors} from '../../constants/colors';
 import {spacing} from '../../constants/dimensions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -58,76 +58,99 @@ const PlayerScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <AntDesign name="arrowleft" color={colors.iconPrimary} size={28} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Playing Now</Text>
-      </View>
-      <View style={styles.imageContainer}>
-        <Image source={{uri: activeTrack?.artwork}} style={styles.coverImage} />
-      </View>
-      <View style={styles.titleRowHeartContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{activeTrack?.title}</Text>
-          <Text style={styles.artist}>{activeTrack?.artist}</Text>
+    <ImageBackground
+      blurRadius={0.5}
+      source={{uri: activeTrack?.artwork}}
+      style={styles.backgroundImage}>
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <AntDesign
+                name="arrowleft"
+                color={colors.iconPrimary}
+                size={28}
+              />
+            </TouchableOpacity>
+            <Text style={styles.headerText}>Playing Now</Text>
+          </View>
+          <View style={styles.imageContainer}>
+            <Image
+              alt="cover"
+              source={{uri: activeTrack?.artwork}}
+              style={styles.coverImage}
+            />
+          </View>
+          <View style={styles.titleRowHeartContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>{activeTrack?.title}</Text>
+              <Text style={styles.artist}>{activeTrack?.artist}</Text>
+            </View>
+            {/* <TouchableOpacity>
+              <AntDesign
+                name={isLiked ? 'heart' : 'hearto'}
+                size={28}
+                color={'white'}
+              />
+            </TouchableOpacity> */}
+          </View>
+          <View style={styles.playerControlContainer}>
+            <TouchableOpacity style={styles.volumeContainer}>
+              <Feather
+                onPress={handleToggleVolume}
+                size={33}
+                name={isMute ? 'volume-x' : 'volume-1'}
+                color={colors.iconSecondary}
+              />
+            </TouchableOpacity>
+            <View style={styles.repeatShuffleContainer}>
+              <PlayerRepeatToggle />
+              <PlayerShuffleToggle />
+            </View>
+          </View>
+          <PlayerProgressBar />
+          <View style={{alignItems: 'center'}}>
+            <View style={styles.playerControlContainer}>
+              <AntDesign
+                name="stepbackward"
+                size={35}
+                color={'white'}
+                onPress={() => TrackPlayer.skipToPrevious()}
+              />
+              <Ionicons
+                name={playing ? 'pause' : 'play'}
+                size={35}
+                color={'white'}
+                onPress={playing ? pauseButton : playButton}
+              />
+              <AntDesign
+                name="stepforward"
+                size={35}
+                color={'white'}
+                onPress={() => TrackPlayer.skipToNext()}
+              />
+            </View>
+          </View>
         </View>
-        <TouchableOpacity>
-          <AntDesign
-            name={isLiked ? 'heart' : 'hearto'}
-            size={28}
-            color={'white'}
-          />
-        </TouchableOpacity>
       </View>
-      <View style={styles.playerControlContainer}>
-        <TouchableOpacity style={styles.volumeContainer}>
-          <Feather
-            onPress={handleToggleVolume}
-            size={28}
-            name={isMute ? 'volume-x' : 'volume-1'}
-            color={colors.iconSecondary}
-          />
-        </TouchableOpacity>
-        <View style={styles.repeatShuffleContainer}>
-          <PlayerRepeatToggle />
-          <PlayerShuffleToggle />
-        </View>
-      </View>
-      <PlayerProgressBar />
-      <View style={{alignItems: 'center'}}>
-        <View style={styles.playerControlContainer}>
-          <AntDesign
-            name="stepbackward"
-            size={35}
-            color={'white'}
-            onPress={() => TrackPlayer.skipToPrevious()}
-          />
-          <Ionicons
-            name={playing ? 'pause' : 'play'}
-            size={35}
-            color={'white'}
-            onPress={playing ? pauseButton : playButton}
-          />
-          <AntDesign
-            name="stepforward"
-            size={35}
-            color={'white'}
-            onPress={() => TrackPlayer.skipToNext()}
-          />
-        </View>
-      </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 export default PlayerScreen;
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundColor,
+    backgroundColor: 'transparent',
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
   },
@@ -141,6 +164,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     flex: 1,
+    marginRight: 28,
   },
   coverImage: {
     height: 270,
@@ -153,7 +177,7 @@ const styles = StyleSheet.create({
     marginVertical: spacing.xl,
   },
   title: {
-    fontSize: 14,
+    fontSize: 20,
     color: colors.textPrimary,
   },
   artist: {
@@ -173,7 +197,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 18,
-    gap: 20,
+    gap: 38,
   },
   volumeContainer: {
     flex: 1,
